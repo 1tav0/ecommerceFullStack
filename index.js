@@ -3,6 +3,8 @@ const app = express();
 const connectDB = require('./config/connectDB');
 const authRouter = require('./routes/authRoutes');
 const bodyParser = require('body-parser');
+const errorHandler = require('./middleware/errorHandler');
+const notFound = require('./middleware/not-found');
 require('dotenv').config();
 
 // middlewares
@@ -13,6 +15,9 @@ app.use('/api/user', authRouter);
 app.use('/', (req, res) => {
   res.send("Hello from server")
 })
+
+app.use(notFound);
+app.use(errorHandler)
 
 const Port = process.env.PORT || 3000;
 
