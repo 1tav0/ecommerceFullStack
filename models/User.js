@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); // Erase if already required
 const bcrypt = require('bcrypt');
+const ObjectId  = mongoose.Types.ObjectId
 // Declare the Schema of the Mongo model
 var userSchema = new mongoose.Schema({
     firstname:{
@@ -27,7 +28,29 @@ var userSchema = new mongoose.Schema({
     role: {
         type: String,
         default: "user"
-    }
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false
+    },
+    cart: {
+        type: Array,
+        default: []
+    },
+    address: [
+        {
+            type: ObjectId,
+            ref: "Address"
+        }
+    ],
+    wishlist: [
+        {
+            type: ObjectId,
+            ref: "Product"
+        }
+    ]
+}, {
+    timestamps: true
 });
 
 //to generate hashed password

@@ -40,7 +40,7 @@ const login = asyncHandler(async (req, res) => {
 //update a user
 const updateUser = asyncHandler(async (req, res) => {
   try {
-    const { id: userid } = req.params;
+    const { _id: userid } = req.user;
     // const updateUser = await User.findByIdAndUpdate(userid, {
     //   firstname: req?.body?.firstname,
     //   lastname: req?.body?.lastname,
@@ -73,6 +73,9 @@ const getUser = asyncHandler(async (req, res) => {
   try {
     const { id: userid } = req.params;
     const user = await User.findOne({ _id: userid });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json({ user });
   } catch (error) {
     throw new Error(error);
