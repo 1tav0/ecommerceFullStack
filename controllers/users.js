@@ -1,6 +1,7 @@
 const { generateToken } = require('../config/jwtToken');
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
+const validateMongoDBId = require('../utils/validateMongodbid');
 
 // create a user
 const register = asyncHandler(async (req, res) => {
@@ -41,6 +42,7 @@ const login = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   try {
     const { _id: userid } = req.user;
+    validateMongoDBId(userid);
     // const updateUser = await User.findByIdAndUpdate(userid, {
     //   firstname: req?.body?.firstname,
     //   lastname: req?.body?.lastname,
@@ -72,6 +74,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
   try {
     const { id: userid } = req.params;
+    validateMongoDBId(userid);
     const user = await User.findOne({ _id: userid });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -86,6 +89,7 @@ const getUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   try {
     const { id: userid } = req.params;
+    validateMongoDBId(userid);
     const user = await User.findOneAndDelete({ _id: userid });
     res.status(200).json({ user });
   } catch (error) {
@@ -93,11 +97,43 @@ const deleteUser = asyncHandler(async (req, res) => {
   }
 })
   
+const blockUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDBId(id);
+  try {
+    const blockedUser = await User.findByIdAndUpdate(id, {
+      isBlocked: true
+    }, {
+      new: true
+    })
+    res.status(200).json({ message: "User Blocked", blockedUser });
+  } catch (error) {
+    throw new Error(error);
+  }
+})
+
+const unblockUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDBId(id);
+  try {
+    const unblock = User.findByIdAndUpdate(id, {
+      isBlocked: false
+    }, {
+      new: true
+    })
+    res.status(200).json({ message: "User unblocked" });
+  } catch (error) {
+    throw new Error(error);
+  }
+})
+
 module.exports = {
   register,
   login,
   getAllUsers,
   getUser,
   deleteUser,
-  updateUser
+  updateUser,
+  blockUser,
+  unblockUser
 }
