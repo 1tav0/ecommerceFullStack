@@ -2,6 +2,8 @@ const { generateToken } = require('../config/jwtToken');
 const User = require('../models/User');
 const asyncHandler = require('express-async-handler');
 const validateMongoDBId = require('../utils/validateMongodbid');
+const { generateRefreshToken } = require('../config/refreshtoken');
+const jwt = require('jsonwebtoken');
 
 // create a user
 const register = asyncHandler(async (req, res) => {
@@ -25,6 +27,16 @@ const login = asyncHandler(async (req, res) => {
   const findUser = await User.findOne({ email: email });
 
   if (findUser && await findUser.isPasswordMatched(password)) {
+    const refreshToken = await generateRefreshToken(findUser?._id);
+    const updateUser = await User.findByIdAndUpdate(findUser?._id, {
+      refreshToken: refreshToken
+    }, {
+      new: true
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000
+    });
     res.status(200).json({
       _id: findUser?._id,
       firstname: findUser?.firstname,
@@ -36,6 +48,28 @@ const login = asyncHandler(async (req, res) => {
   } else {
     throw new Error("Invalid Credentials.");
   }
+})
+
+//handle refresh token
+const handleRefreshToken = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  console.log(cookie);
+  const refreshToken = cookie.refreshToken;
+  if (!refreshToken) {
+    throw new Error("No Refresh Token in Cookies");
+  }
+  console.log(refreshToken);
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    throw new Error("No Refresh Token present in db or not matched");
+  }
+  jwt.verify(refreshToken, process.env.JWT_KEY, (err, decoded) => {
+    if (err || user.id != decoded.id) {
+      throw new Error("There is something wrong with refresh token");
+    }
+    const accessToken = generateToken(user?.id);
+    res.json({ accessToken });
+  })
 })
 
 //update a user
@@ -135,5 +169,6 @@ module.exports = {
   deleteUser,
   updateUser,
   blockUser,
-  unblockUser
+  unblockUser,
+  handleRefreshToken
 }
