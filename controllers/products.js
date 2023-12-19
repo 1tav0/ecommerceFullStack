@@ -1,14 +1,46 @@
 const Product = require('../models/Product');
 const asyncHandler = require('express-async-handler');
+const slugify = require("slugify");
 
 const createProduct = asyncHandler(async (req, res) => {
   try {
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title);
+    }
     const newProduct = await Product.create(req.body);
     res.status(200).json({ newProduct });
   } catch (error) {
     throw new Error(error);
   }
 });
+
+const updateProduct = asyncHandler(async (req, res) => {
+  const {id: productid} = req.params;
+  try {
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title);
+    }
+    const updatedProduct = await Product.findByIdAndUpdate( productid,
+    req.body, 
+    {
+      new: true,
+      runValidators: true // Ensure validation runs on update
+    })
+    res.status(200).json({ updatedProduct });
+  } catch (error) {
+    throw new Error(error);
+  }
+})
+
+const deleteProduct = asyncHandler(async (req, res) => {
+  const { id: productid } = req.params;
+  try {
+    const deletedProduct = await Product.findOneAndDelete(productid );
+    res.status(200).json(deletedProduct);
+  } catch (error) {
+    throw new Error(error);
+  }
+})
 
 const getProduct = asyncHandler(async (req, res) => {
   const { id: productid } = req.params;
@@ -31,7 +63,7 @@ const getAllProducts = asyncHandler(async (req,res) =>{
       return res.status(404).json({ error: "No products found" });
     }
 
-    res.status(200).json({ products });
+    res.status(200).json({ products, totalProducts: products.length });
   } catch (error) {
     throw new Error(error);
   }
@@ -40,5 +72,7 @@ const getAllProducts = asyncHandler(async (req,res) =>{
 module.exports = {
   createProduct,
   getProduct,
-  getAllProducts
+  getAllProducts,
+  updateProduct,
+  deleteProduct
 }

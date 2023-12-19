@@ -7,10 +7,13 @@ const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/not-found');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+
 require('dotenv').config();
 
 // middlewares
 app.use(express.json());
+app.use(morgan("dev")); // to display request from postman in console
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());

@@ -35,3 +35,46 @@ Why Use Refresh Tokens:
 
 Enhanced Security: Access tokens have a shorter lifespan for security reasons. If an access token is compromised, the damage is limited by its short validity. Refresh tokens, on the other hand, can have a longer lifespan since they are used less frequently and can be used to obtain a new access token.
 Reduced Password Exposure: The refresh token is less frequently transmitted over the network than the user's password. This reduces the risk associated with intercepting and using the user's credentials.
+
+
+***********extra packages********
+$npm i morgan 
+app.use(morgan("dev")) // to see the request in the console 
+GET /api/product/6580ea0e7c25e120a2e482fe 200 100.556 ms - 255
+GET /api/product 200 94.717 ms - 505
+
+
+$npm i slugify 
+helps us modify the model, used in the controllers
+
+will have a request to make a product like this : 
+{
+    "title":"samsung laptop",
+    "category": "Laptop",
+    "brand":"Samsung",
+    "description":"samsung item",
+    "price": 500,
+    "quantity": 100,
+    "color": "gray"
+} and it will output like this 
+{
+    "newProduct": {
+        "title": "samsung laptop",
+        "slug": "samsung-laptop",
+        "description": "samsung item",
+        "price": 500,
+        "category": "Laptop",
+        "quantity": 100,
+        "images": [],
+        "color": "gray",
+        "brand": "Samsung",
+        "sold": 0,
+        "_id": "6581c92eb3cd54b3803582a2",
+        "ratings": [],
+        "createdAt": "2023-12-19T16:47:42.692Z",
+        "updatedAt": "2023-12-19T16:47:42.692Z",
+        "__v": 0
+    }
+}
+
+notice the slug property is set bc we have used slugify in the api controller 
