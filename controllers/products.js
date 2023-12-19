@@ -56,14 +56,30 @@ const getProduct = asyncHandler(async (req, res) => {
   }
 });
 
-const getAllProducts = asyncHandler(async (req,res) =>{
+const getAllProducts = asyncHandler(async (req, res) => {
+  // console.log(req.query);
   try {
-    const products = await Product.find({});
-    if (!products) {
+    const queryObject = { ...req.query };
+    const excludeFields = ['page', 'sort', 'limit', 'fields'];
+    excludeFields.forEach(item => delete queryObject[item]);
+    // console.log(queryObject, req.query);
+    // const products = await Product.find(req.query);
+    // const products = await Product.find({
+    //   brand: req.query.brand,
+    //   category: req.query.category
+    // });
+    // const products = await Product.where("category").equals(req.query.category);
+
+    let queryStr = JSON.stringify(queryObject);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`)
+    //console.log(JSON.parse(queryStr));
+    const query = Product.find(JSON.parse(queryStr));
+    const product = await query;
+    if (!product) {
       return res.status(404).json({ error: "No products found" });
     }
 
-    res.status(200).json({ products, totalProducts: products.length });
+    res.status(200).json({ product, totalProducts: product.length });
   } catch (error) {
     throw new Error(error);
   }
