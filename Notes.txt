@@ -1,0 +1,37 @@
+For authentication we need:   
+  - bcrypt 
+  - jwt 
+  - cookie-parser 
+
+why do we need cookies? for refresh token 
+why do we need refresh token ? for authentication purposes 
+- install cookie-parser 
+- add field refreshToken type String to model 
+- app.use(cookieParser);
+- make refreshToken file and its implementation function
+- make use of refreshToken in user controller
+- generate refreshToken when we log in 
+- update the User by id and pass in the new refreshToken to its refreshToken property 
+- then res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000
+    });
+
+- now we can make a handler adn route for the refreshToken using the cookie from the request cookies passed when we loggin in 
+
+**************WHY COOKIES FOR REFRESHIN TOKEN**************
+User Login (Endpoint: /login):
+
+When a user logs in with their credentials (email and password), your server verifies the credentials.
+If the credentials are valid, you generate a new refresh token and update the user's record in the database with this new refresh token.
+You set the refresh token as an HTTP-only cookie in the response. The purpose of setting it as an HTTP-only cookie is to enhance security by preventing client-side access to the cookie via JavaScript.
+Handling Refresh Token (Endpoint: /refresh or similar):
+
+When the access token expires, the client can make a request to the /refresh endpoint with the stored refresh token in the cookie.
+In your handleRefreshToken function, you retrieve the refresh token from the cookie in the request.
+You verify the refresh token against the one stored in the database for the corresponding user.
+If the refresh token is valid, you generate a new access token and send it back to the client. The new access token can then be used for accessing protected resources on the server.
+Why Use Refresh Tokens:
+
+Enhanced Security: Access tokens have a shorter lifespan for security reasons. If an access token is compromised, the damage is limited by its short validity. Refresh tokens, on the other hand, can have a longer lifespan since they are used less frequently and can be used to obtain a new access token.
+Reduced Password Exposure: The refresh token is less frequently transmitted over the network than the user's password. This reduces the risk associated with intercepting and using the user's credentials.

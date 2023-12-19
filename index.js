@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const connectDB = require('./config/connectDB');
 const authRouter = require('./routes/authRoutes');
+const productRouter = require('./routes/productRoutes');
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/not-found');
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser());
 app.use('/api/user', authRouter);
+app.use('/api/product', productRouter);
 app.use('/', (req, res) => {
   res.send("Hello from server")
 })
