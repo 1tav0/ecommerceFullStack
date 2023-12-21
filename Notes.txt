@@ -122,3 +122,5 @@ however, since we have 2-step verification in google we will need to generate a 
 google -> "google app password" -> App Passwords - Sign In - Google Accounts -> name the app -> get the password 
 
 upon getting the password use by saving it in the .env file
+
+then we just make our resetPassword function.
