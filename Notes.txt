@@ -78,3 +78,47 @@ will have a request to make a product like this :
 }
 
 notice the slug property is set bc we have used slugify in the api controller 
+
+// for email integration
+
+$npm i nodemailer 
+// to make use of nodemailer we need to create a controller for it 
+
+const sendEmail = asyncHandler(async (data, req, res) => {
+  let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: process.env.MAIL_ID, // generated ethereal user
+      pass: process.env.MP // generated ethereal password
+    },
+  });
+  //send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: '"HEY 👻" <abc@gmail.com.com>', // sender address
+    to: data.to, // list of receivers
+    subject: data.subject, //subject line
+    text: data.text, // plain text body
+    html: data.htm//html body
+  });
+  console.log("Message sent: %s", info.messageId);
+  
+  // Preview only available when sending through an Ethereal account
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
+})
+
+notice this: host: "smtp.gmail.com",
+
+means we will be using gmail, so we will need to provide our account and our password 
+
+auth: {
+      user: process.env.MAIL_ID, // generated ethereal user
+      pass: process.env.MP // generated ethereal password
+    },
+
+however, since we have 2-step verification in google we will need to generate a app password so our third party app can have access to gmail account.
+
+google -> "google app password" -> App Passwords - Sign In - Google Accounts -> name the app -> get the password 
+
+upon getting the password use by saving it in the .env file

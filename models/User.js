@@ -55,13 +55,13 @@ var userSchema = new mongoose.Schema({
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passswordResetExpires: Date,
+    passwordResetExpires: Date,
 }, {
     timestamps: true
 });
 
 //to generate hashed password
-userSchema.pre('save', async function () {
+userSchema.pre('save', async function (next) {
     // if password is reset to a new one we have to hash it again else continue
     if (!this.isModified('password')) {
         next();
@@ -80,9 +80,30 @@ userSchema.methods.createPasswordResetToken = async function () {
         .createHash('sha256')
         .update(resetToken)
         .digest("hex");
-    this.passswordResetExpires = Date.now() + 30 * 60 * 1000; //10 minutes
+    this.passwordResetExpires = Date.now() + 30 * 60 * 1000; //10 minutes
     return resetToken;
 }
 
 //Export the model
 module.exports = mongoose.model('User', userSchema);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
