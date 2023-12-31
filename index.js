@@ -4,6 +4,9 @@ const connectDB = require('./config/connectDB');
 const authRouter = require('./routes/authRoutes');
 const productRouter = require('./routes/productRoutes');
 const blogRouter = require('./routes/blogRoutes');
+const productCategoryRouter = require('./routes/productCategoryRoutes');
+const blogCategoryRouter = require('./routes/blogCategoryRoutes');
+const brandRouter = require('./routes/brandRoutes');
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
 const notFound = require('./middleware/not-found');
@@ -21,6 +24,9 @@ app.use(cookieParser());
 app.use('/api/user', authRouter);
 app.use('/api/product', productRouter);
 app.use('/api/blog', blogRouter);
+app.use('/api/product-category', productCategoryRouter);
+app.use('/api/blog-category', blogCategoryRouter);
+app.use('/api/brands', brandRouter);
 app.use('/', (req, res) => {
   res.send("Hello from server")
 })
