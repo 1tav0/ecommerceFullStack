@@ -1,3 +1,5 @@
+SHORTCUTS: just like "rafce" theres !mdbgum "MongoDataBaseGenerateUserModel"
+
 For authentication we need:   
   - bcrypt 
   - jwt 
@@ -17,7 +19,7 @@ why do we need refresh token ? for authentication purposes
       maxAge: 72 * 60 * 60 * 1000
     });
 
-- now we can make a handler adn route for the refreshToken using the cookie from the request cookies passed when we loggin in 
+- now we can make a handler and route for the refreshToken using the cookie from the request cookies passed when we loggin in 
 
 **************WHY COOKIES FOR REFRESHIN TOKEN**************
 User Login (Endpoint: /login):
@@ -43,7 +45,7 @@ app.use(morgan("dev")) // to see the request in the console
 GET /api/product/6580ea0e7c25e120a2e482fe 200 100.556 ms - 255
 GET /api/product 200 94.717 ms - 505
 
-
+**************
 $npm i slugify 
 helps us modify the model, used in the controllers
 
@@ -79,7 +81,7 @@ will have a request to make a product like this :
 
 notice the slug property is set bc we have used slugify in the api controller 
 
-// for email integration
+**************email integration***************
 
 $npm i nodemailer 
 // to make use of nodemailer we need to create a controller for it 
@@ -124,3 +126,43 @@ google -> "google app password" -> App Passwords - Sign In - Google Accounts -> 
 upon getting the password use by saving it in the .env file
 
 then we just make our resetPassword function.
+
+******************CODE GREPPER***************
+
+Notes on SCHEMA: 
+Options: 
+
+In Mongoose, the toJSON and toObject options allow you to control how Mongoose documents are transformed when converted to JSON or JavaScript objects.
+
+toJSON Option:
+
+When set to true, the toJSON option includes virtual properties in the JSON representation of the document.
+Virtual properties are properties that are not stored in the database but can be computed based on existing data. They are useful for adding calculated or derived fields to the document.
+
+toObject Option:
+
+Similar to toJSON, the toObject option controls the transformation of documents to JavaScript objects.
+If set to true, it includes virtual properties in the JavaScript object representation.
+
+The timestamps option, when set to true, automatically adds two fields to each document:
+createdAt: Represents the timestamp of the document's creation.
+updatedAt: Represents the timestamp of the document's last update.
+These fields are useful for tracking when documents are created and modified.
+
+Virtuals:
+
+In Mongoose, virtuals are additional properties that you can define on a schema but are not persisted in the database.
+Virtuals are computed properties that can be based on the values of other fields in the document.
+They are useful for adding derived or calculated properties without actually storing them in the database.
+
+how to make use of these properties: 
+const blogSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  // ... other fields ...
+});
+
+// Define a virtual property for the full blog URL based on the title
+blogSchema.virtual('fullUrl').get(function() {
+  return `/blogs/${this.title}`;
+});
