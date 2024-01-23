@@ -52,7 +52,7 @@ const login = asyncHandler(async (req, res) => {
   }
 })
 
-//handle refresh token
+//handle refresh token aka verify it 
 const handleRefreshToken = asyncHandler(async (req, res) => {
   const cookie = req.cookies;
   console.log(cookie);

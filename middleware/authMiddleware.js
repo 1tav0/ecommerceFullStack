@@ -58,6 +58,8 @@ module.exports = {
 };
 
 
-//for postman and authorization token header 
+//for postman and authorization token header
 //const jsonData = pm.response.json()
 //pm.globals.set("accessToken", jsonData.token)
+
+

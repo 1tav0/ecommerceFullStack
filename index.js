@@ -6,6 +6,7 @@ const productRouter = require('./routes/productRoutes');
 const blogRouter = require('./routes/blogRoutes');
 const productCategoryRouter = require('./routes/productCategoryRoutes');
 const blogCategoryRouter = require('./routes/blogCategoryRoutes');
+const couponRouter = require('./routes/coupon');
 const brandRouter = require('./routes/brandRoutes');
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
@@ -27,6 +28,7 @@ app.use('/api/blog', blogRouter);
 app.use('/api/product-category', productCategoryRouter);
 app.use('/api/blog-category', blogCategoryRouter);
 app.use('/api/brands', brandRouter);
+app.use('/api/coupon', couponRouter);
 app.use('/', (req, res) => {
   res.send("Hello from server")
 })
