@@ -166,3 +166,144 @@ const blogSchema = new mongoose.Schema({
 blogSchema.virtual('fullUrl').get(function() {
   return `/blogs/${this.title}`;
 });
+
+
+************CLODUINARY**************
+1. make cloudinary file for configuration 
+const cloudinary = require('cloudinary');
+
+cloudinary.confing({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
+});
+
+const cloudinaryUploadImg = async (fileToUpload) => {
+  return new Promise((resolve) => {
+    cloudinary.uploader.upload(fileToUpload, (result) => {
+      resolve(
+        {
+          url: result.secure_url,
+        },
+        {
+          resource_type: "auto"
+        }
+      )
+    })
+  })
+}
+
+module.exports = cloudinaryUploadImg;
+
+2. you get the configurations from your cloudinary dashboard 
+
+3. make uploadImages.js file in middleware folder 
+
+4. npm install multer sharp cloudinary
+
+multer : to handle multi part form data 
+sharp : to change format, quality of data 
+
+// Configuring multer's storage engine. This specifies where to save the uploaded files and how to name them
+const multerStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../public/images"));
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ".jpeg");
+  }
+})
+
+- In the context of Multer, destination is a property of the storage engine configuration. It specifies the directory where uploaded files will be saved.
+- The destination property is a function that takes three parameters: req (the request object), file (the file being uploaded), and cb (a callback function).
+- __dirname is a special variable in Node.js that represents the absolute path of the directory containing the currently executing script.
+- It is useful for creating absolute paths and ensuring that file operations are relative to the script's location.
+
+path.join(__dirname, "../public/images"):
+
+- joins the current script's directory (__dirname) with the relative path ../public/images
+
+- The ../ in the path means to go up one level in the directory structure, and public/images specifies the destination directory where the uploaded files will be stored
+
+cb(null, ...) (Callback):
+
+- The cb callback function is invoked with two parameters: null (indicating no error) and the destination directory path.
+- Multer uses this information to determine where to save the uploaded file.
+
+- The destination property ensures that the uploaded files are saved in the "public/images" directory relative to the script's location. This is a common practice to organize uploaded files and make it easier to serve them through a web server. In essence, this configuration ensures that the uploaded files will be stored in the "public/images" directory, and the use of __dirname ensures that the path is resolved correctly regardless of where the script is executed from.
+
+- The filename property is a function that generates a unique filename for each uploaded file. It is part of the multer.diskStorage configuration, specifically responsible for determining how to name the files.
+
+- Date.now() returns the current timestamp in milliseconds.
+It is used to create a unique part of the filename based on the current time when the file is uploaded.
+
+- Math.random() generates a random decimal between 0 (inclusive) and 1 (exclusive).
+- Math.random() * 1e9 scales this random value to be between 0 and 1 billion.
+- Math.round(...) rounds the result to the nearest whole number.
+This part is used to create a random suffix to add to the filename, ensuring uniqueness.
+
+- file.fieldname is the name of the field in the form that is used for file uploads. In your case, it's assumed to be "images" based on the previous parts of the code.
+
+ + "-" +:
+
+This part of the code adds a hyphen ("-") between the fieldname and the unique suffix, ensuring a clear separation in the filename.
+
+.jpeg:
+
+- This specifies the file extension for the uploaded files. In this case, it's set to ".jpeg". This is consistent with the configuration earlier, where the processed images are saved with a ".jpeg" extension.
+
+cb(null, ...): (Callback)
+
+- The cb callback function is invoked with two parameters: null (indicating no error) and the generated filename.
+Multer uses this information to determine how to name and save the uploaded file.
+
+- The filename function generates a unique filename for each uploaded file based on the fieldname ("images"), the current timestamp, and a random suffix. This ensures that each file is uniquely identified and avoids naming conflicts.
+
+file.mimetype:
+
+MIME (Multipurpose Internet Mail Extensions)
+
+A MIME type is a label used to identify the type of data contained in a file. It consists of two parts: a primary type and a sub-type, separated by a slash (/).
+Examples of MIME types include:
+- text/html for HTML documents
+- image/jpeg for JPEG images
+- audio/mp3 for MP3 audio files
+- application/pdf for PDF documents
+
+
+**** Multer Instance ****
+  const uploadPhoto = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+  limits: { fieldSize: 2000000 }
+});
+
+storage: multerStorage
+
+- Specifies the storage engine to be used by Multer for handling file storage. In this case, it's set to multerStorage, which is an instance of multer.diskStorage that defines where and how uploaded files will be stored on the server.
+
+fileFilter: multerFilter:
+
+- Defines a filter function that determines which files should be accepted and which should be rejected during the file upload process. It uses the multerFilter function to check the file's MIME type and file extension.
+
+limits: { fieldSize: 2000000 }:
+
+- Specifies limits on the size of the incoming form fields. In this case, it sets a limit on the field size to 2,000,000 bytes (approximately 2 MB). This is a measure to control the size of the uploaded files.
+
+How to Use uploadPhoto in an Express Route:
+
+- uploadPhoto can be used as middleware in an Express route to handle file uploads.
+
+const express = require('express');
+const router = express.Router();
+
+router.post('/upload', uploadPhoto.single('file'), (req, res) => {
+  // Handle the uploaded file in the route handler
+  // req.file contains information about the uploaded file
+  res.send('File uploaded successfully!');
+});
+
+module.exports = router;
+
+- In this example, uploadPhoto.single('file') specifies that the route expects a single file upload with the field name 'file'. The uploaded file information will be available in req.file for further processing.

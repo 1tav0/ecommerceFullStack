@@ -192,9 +192,9 @@ const rating = asyncHandler(async (req, res) => {
     }
 
     const products = await Product.findById(productid);
-    let totalRatings = products.ratings.length;
+    let ratingSize = products.ratings.length;
     let ratingsSum = products.ratings.map(item => item.star).reduce((prev, curr) => prev + curr, 0);
-    let rating = Math.round(ratingsSum / totalRatings);
+    let rating = Math.round(ratingsSum / ratingSize);
     let updateRating = await Product.findByIdAndUpdate(productid, {
       totalRating: rating
     }, {
@@ -205,6 +205,10 @@ const rating = asyncHandler(async (req, res) => {
   } catch (error) {
     throw new Error(error);
   }
+});
+
+const uploadImages = asyncHandler(async (req, res) => {
+  console.log(req.files);
 })
 
 module.exports = {
@@ -215,4 +219,5 @@ module.exports = {
   deleteProduct,
   addToWishList,
   rating,
+  uploadImages
 }
